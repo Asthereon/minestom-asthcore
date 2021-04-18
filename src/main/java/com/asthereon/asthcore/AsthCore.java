@@ -1,16 +1,24 @@
 package com.asthereon.asthcore;
 
+import com.asthereon.asthcore.TestServer.StoneGenerator;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.entity.Player;
+import net.minestom.server.event.player.PlayerLoginEvent;
+import net.minestom.server.extras.PlacementRules;
+import net.minestom.server.extras.optifine.OptifineSupport;
+import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.utils.Position;
 
 import java.text.NumberFormat;
 import java.time.Duration;
@@ -178,4 +186,34 @@ public class AsthCore {
         return AsthCore.getRandomDouble(0, 100) < chance;
     }
 
+    public static void createTestServer() {
+        // Initialization
+        MinecraftServer minecraftServer = MinecraftServer.init();
+
+        // Create the instance
+        InstanceManager instanceManager = MinecraftServer.getInstanceManager();
+        InstanceContainer instanceContainer = instanceManager.createInstanceContainer();
+
+        // Set the ChunkGenerator
+        instanceContainer.setChunkGenerator(new StoneGenerator());
+
+        // Util options
+        OptifineSupport.enable();
+        PlacementRules.init();
+
+        // Add an event callback to specify the spawning instance (and the spawn position)
+        MinecraftServer.getGlobalEventHandler().addEventCallback(PlayerLoginEvent.class, event -> {
+            final Player player = event.getPlayer();
+            event.setSpawningInstance(instanceContainer);
+            player.setRespawnPoint(new Position(0, 1, 0));
+        });
+
+        // Start the server on port 25565
+        minecraftServer.start("0.0.0.0", 25565, (playerConnection, responseData) -> {
+            responseData.setVersion(MinecraftServer.VERSION_NAME);
+            responseData.setMaxPlayer(20);
+            responseData.setOnline(MinecraftServer.getConnectionManager().getOnlinePlayers().size());
+            responseData.setDescription(Component.text("Test Server"));
+        });
+    }
 }
