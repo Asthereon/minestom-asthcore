@@ -26,6 +26,8 @@ import java.util.UUID;
 
 public class AsthCore {
 
+    public static final String VERSION = "0.0.1";
+
     public static Component getComponent(String text) {
         return MiniMessage.get().parse(text);
     }
@@ -186,7 +188,7 @@ public class AsthCore {
         return AsthCore.getRandomDouble(0, 100) < chance;
     }
 
-    public static void createTestServer() {
+    public static MinecraftServer createTestServer() {
         // Initialization
         MinecraftServer minecraftServer = MinecraftServer.init();
 
@@ -208,6 +210,10 @@ public class AsthCore {
             player.setRespawnPoint(new Position(0, 1, 0));
         });
 
+        return minecraftServer;
+    }
+
+    public static void startTestServer(MinecraftServer minecraftServer) {
         // Start the server on port 25565
         minecraftServer.start("0.0.0.0", 25565, (playerConnection, responseData) -> {
             responseData.setVersion(MinecraftServer.VERSION_NAME);
