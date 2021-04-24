@@ -11,6 +11,7 @@ import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerLoginEvent;
+import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.PlacementRules;
 import net.minestom.server.extras.optifine.OptifineSupport;
 import net.minestom.server.instance.InstanceContainer;
@@ -191,6 +192,9 @@ public class AsthCore {
     public static MinecraftServer createTestServer() {
         // Initialization
         MinecraftServer minecraftServer = MinecraftServer.init();
+
+        // Mojang authorization for correct UUIDs
+        MojangAuth.init();
 
         // Create the instance
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
